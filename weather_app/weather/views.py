@@ -11,7 +11,9 @@ from .forms import CityForm
 
 def index(request):
 
-    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=a85986ef26e2aeaa4240e14bab130b61'
+    api_key = '' # enter the api key here
+
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=api_key'
 
     if request.method == 'POST':
         form = CityForm(request.POST)
