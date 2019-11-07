@@ -1,26 +1,41 @@
-from django.shortcuts import render
+
 
 import requests
+from django.shortcuts import render
+from .models import town
 
-# Create your views here.
+from .forms import CityForm
+
+
+
 
 def index(request):
-    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=500ddbd31d297183f6f6292e03a32866'
 
-    city ="Las Vegas"
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=a85986ef26e2aeaa4240e14bab130b61'
 
-    r = requests.get(url.format(city)).json()
-    print(r.text)
+    if request.method == 'POST':
+        form = CityForm(request.POST)
+        form.save()
 
-    city_weather = {
+    form = CityForm()
 
-        'city': city ,
-        'temperature': r['main']['temp'] ,
-        'description': r['weather'][0]['description'] ,
-        'icon': r['weather'][0]['icon'],
+    cities = town.objects.all()
 
+    weather_data = []
 
+    for city in cities:
 
-    }
+        r = requests.get(url.format(city)).json()
 
-    return render(request,'weather/weather.html')
+        city_weather = {
+            'city' : city.name,
+            'temperature' : r['main']['temp'],
+            'description' : r['weather'][0]['description'],
+            'icon' : r['weather'][0]['icon'],
+        }
+
+        weather_data.append(city_weather)
+
+    context = {'weather_data' : weather_data, 'form' : form}
+    return render(request, 'weather/weather.html', context)
+
